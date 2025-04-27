@@ -5,6 +5,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -32,6 +33,13 @@ void AAuraPlayerController::BeginPlay()
 	SetInputMode(InputModeData);
 }
 
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
+}
+
 void AAuraPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -39,6 +47,41 @@ void AAuraPlayerController::SetupInputComponent()
 	UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ThisClass::Move);
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	
+	if (!CursorHit.bBlockingHit) { return; }
+
+	LastActor = CurrentActor;
+	CurrentActor = CursorHit.GetActor();
+
+	if (LastActor == nullptr && CurrentActor)
+	{
+		// Hovering CurrentActor for the first time.
+		CurrentActor->HighlightActor();
+		return;
+	}
+
+	if (LastActor && CurrentActor == nullptr)
+	{
+		// Not hovering over anything anymore.
+		LastActor->UnHighlightActor();
+		return;
+	}
+
+	if (LastActor && CurrentActor)
+	{
+		// Still hovering over the same actor.
+		if (LastActor == CurrentActor) { return; }
+
+		// Hovering to a new actor.
+		LastActor->UnHighlightActor();
+		CurrentActor->HighlightActor();
+	}
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& Value)
