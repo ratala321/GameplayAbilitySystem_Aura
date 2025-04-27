@@ -3,6 +3,7 @@
 
 #include "Character/AuraCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PlayerState.h"
 
 AAuraCharacter::AAuraCharacter()
 {
