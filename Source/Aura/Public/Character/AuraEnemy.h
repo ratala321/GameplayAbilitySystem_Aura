@@ -14,7 +14,11 @@ UCLASS()
 class AURA_API AAuraEnemy : public AAuraCharacterBase, public IEnemyInterface
 {
 	GENERATED_BODY()
-	
+
+public:
 	virtual void HighlightActor() override;
 	virtual void UnHighlightActor() override;
+	
+private:
+	void SetHighlighProperties(bool bRenderCustomDepth, int StencilValue);
 };
