@@ -11,6 +11,7 @@ AAuraEnemy::AAuraEnemy()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAuraAbilitySystemComponent>("AbilitySystemComponent");
 	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Minimal);
 	
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 }
@@ -23,6 +24,13 @@ void AAuraEnemy::HighlightActor()
 void AAuraEnemy::UnHighlightActor()
 {
 	SetHighlighProperties(false, 0.f);
+}
+
+void AAuraEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
 void AAuraEnemy::SetHighlighProperties(bool bRenderCustomDepth, int StencilValue)
